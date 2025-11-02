@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول / إنشاء حساب</title>
+    <style>
+        body {
+            font-family: "Cairo", sans-serif;
+            background: #f6f8fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        input {
+            width: 90%;
+            margin: 8px 0;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+            button:hover {
+                background: #0056b3;
+            }
+
+        .toggle {
+            margin-top: 10px;
+            cursor: pointer;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container"> 
+    <h2 id="formTitle">تسجيل الدخول</h2>
+    <input type="text" id="email" placeholder="البريد الإلكتروني">
+    <input type="password" id="password" placeholder="كلمة المرور">
+    <div id="registerFields" style="display:none;">
+        <input type="text" id="username" placeholder="اسم المستخدم"> 
+        <input type="text" id="role" placeholder="الوظيفة (Admin أو User)"> 
+        </div> <button id="submitBtn">دخول</button> 
+    <div class="toggle" id="toggleMode">ليس لديك حساب؟ سجل الآن</div>
+    </div>
+    <script>
+        let isLogin = true;
+        document.getElementById("toggleMode").addEventListener("click", () =>
+        {
+            isLogin = !isLogin;
+            document.getElementById("formTitle").innerText = isLogin ? "تسجيل الدخول" : "إنشاء حساب";
+            document.getElementById("registerFields").style.display = isLogin ? "none" : "block";
+            document.getElementById("submitBtn").innerText = isLogin ? "دخول" : "تسجيل";
+            document.getElementById("toggleMode").innerText = isLogin ? "ليس لديك حساب؟ سجل الآن" : "لديك حساب؟ تسجيل الدخول";
+        }); document.getElementById("submitBtn").addEventListener("click", async () =>
+        {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            let url, body;
+            if (isLogin)
+            {
+                url = "http://localhost:5150/api/auth/login";
+                body = { email, password };
+            }
+            else
+            {
+                const username = document.getElementById("username").value;
+                const role = document.getElementById("role").value;
+                url = "http://localhost:5150/api/auth/register";
+                body = { username, email, password, role };
+            } const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+            if (res.ok)
+            {
+                if (isLogin)
+                {
+                    localStorage.setItem("token", data.token);
+                    alert("تم تسجيل الدخول بنجاح ✅");
+                    window.location.href = "parents.html";
+                }
+                else {
+                    alert("تم إنشاء الحساب بنجاح ✅ يمكنك الآن تسجيل الدخول");
+                    isLogin = true; document.getElementById("toggleMode").click();
+                }
+            }
+            else { alert(data.message || "حدث خطأ أثناء العملية"); }
+        });
+    </script>
+</body>
+</html>

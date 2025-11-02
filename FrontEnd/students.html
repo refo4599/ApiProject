@@ -1,0 +1,228 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 إدارة الطلاب</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            direction: rtl;
+            text-align: right;
+        }
+
+        .card {
+            border-radius: 15px;
+        }
+
+        .btn {
+            font-weight: bold;
+        }
+
+        .loading {
+            color: gray;
+            font-size: 14px;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <div class="top-bar mb-3">
+            <h2 class="text-primary">📘 إدارة الطلاب</h2>
+            <button onclick="window.location.href='parents.html'" class="btn btn-secondary">🔙 الرجوع إلى أولياء الأمور</button>
+        </div>
+
+        <!-- Show All Student -->
+        <div class="card p-4 shadow mb-4">
+            <h5>عرض كل الطلاب</h5>
+            <button id="btnGetAll" class="btn btn-success mb-3">عرض الكل</button>
+            <div id="studentsContainer"></div>
+        </div>
+
+        <!-- Search -->
+        <div class="card p-4 shadow mb-4">
+            <h5>بحث عن طالب</h5>
+            <div class="input-group mb-3">
+                <input type="number" id="studentIdSearch" class="form-control" placeholder="أدخل رقم الطالب">
+                <button id="btnSearch" class="btn btn-info">بحث</button>
+            </div>
+            <div id="searchResult"></div>
+        </div>
+
+        <!-- Add -->
+        <div class="card p-4 shadow mb-4">
+            <h5>إضافة طالب جديد</h5>
+            <div class="row g-2">
+                <div class="col-md-3"><input type="text" id="addName" class="form-control" placeholder="اسم الطالب"></div>
+                <div class="col-md-3"><input type="text" id="addGrade" class="form-control" placeholder="الصف الدراسي"></div>
+                <div class="col-md-2"><input type="number" id="addAge" class="form-control" placeholder="العمر"></div>
+                <div class="col-md-2"><input type="number" id="addParentId" class="form-control" placeholder="Parent ID"></div>
+                <div class="col-md-2"><button id="btnAdd" class="btn btn-primary w-100">إضافة</button></div>
+            </div>
+            <div id="addMsg" class="mt-2"></div>
+        </div>
+
+        <!-- Update -->
+        <div class="card p-4 shadow mb-4">
+            <h5>تحديث بيانات طالب</h5>
+            <div class="row g-2">
+                <div class="col-md-2"><input type="number" id="updateId" class="form-control" placeholder="ID الطالب"></div>
+                <div class="col-md-3"><input type="text" id="updateName" class="form-control" placeholder="الاسم الجديد"></div>
+                <div class="col-md-2"><input type="text" id="updateGrade" class="form-control" placeholder="الصف الجديد"></div>
+                <div class="col-md-2"><input type="number" id="updateAge" class="form-control" placeholder="العمر الجديد"></div>
+                <div class="col-md-2"><input type="number" id="updateParentId" class="form-control" placeholder="Parent ID"></div>
+                <div class="col-md-1"><button id="btnUpdate" class="btn btn-warning w-100">تحديث</button></div>
+            </div>
+            <div id="updateMsg" class="mt-2"></div>
+        </div>
+
+        <!-- Delete-->
+        <div class="card p-4 shadow">
+            <h5>حذف طالب</h5>
+            <div class="input-group mb-3">
+                <input type="number" id="deleteId" class="form-control" placeholder="ID الطالب">
+                <button id="btnDelete" class="btn btn-danger">حذف</button>
+            </div>
+            <div id="deleteMsg"></div>
+        </div>
+    </div>
+
+    <script>
+        const apiBase = "http://localhost:5150/api/student";
+
+        $("#btnGetAll").click(function () {
+            $("#studentsContainer").html("<div class='loading'>جارِ التحميل...</div>");
+            $.get(apiBase)
+                .done(data => showStudents(data, "#studentsContainer"))
+                .fail(() => $("#studentsContainer").html("<div class='alert alert-danger'>فشل في الاتصال بالسيرفر ❌</div>"));
+        });
+
+        $("#btnSearch").click(function () {
+            const id = $("#studentIdSearch").val();
+            if (!id) return alert("أدخل ID الطالب");
+            $("#searchResult").html("<div class='loading'>جارِ البحث...</div>");
+            $.get(`${apiBase}/${id}`)
+                .done(data => showStudents([data], "#searchResult"))
+                .fail(() => $("#searchResult").html("<div class='alert alert-warning'>الطالب غير موجود</div>"));
+        });
+
+        $("#btnAdd").click(function () {
+            const dto = {
+                studentName: $("#addName").val(),
+                grade: $("#addGrade").val(),
+                age: parseInt($("#addAge").val()),
+                parentId: parseInt($("#addParentId").val())
+            };
+            $.ajax({
+                url: apiBase,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify(dto),
+                success: () => {
+                    $("#addMsg").html(`<div class='alert alert-success'>تمت الإضافة ✅</div>`);
+                    $("#btnGetAll").click();
+                },
+                error: () => $("#addMsg").html("<div class='alert alert-danger'>فشل في الإضافة ❌</div>")
+            });
+        });
+
+        function showStudents(data, containerId) {
+            if (!data || data.length === 0) {
+                $(containerId).html("<div class='alert alert-warning'>لا يوجد طلاب</div>");
+                return;
+            }
+
+            let table = `<table class="table table-bordered table-striped text-center">
+                    <thead class="table-dark"><tr>
+                        <th>ID</th><th>الاسم</th><th>الصف</th><th>العمر</th><th>Parent ID</th><th>الإجراءات</th>
+                    </tr></thead><tbody>`;
+
+            data.forEach(s => {
+                const id = s.studentId ?? s.StudentId;
+                table += `<tr data-id="${id}">
+                        <td>${id}</td><td>${s.studentName ?? s.StudentName}</td>
+                        <td>${s.grade ?? s.Grade}</td><td>${s.age ?? s.Age}</td>
+                        <td>${s.parentId ?? s.ParentId}</td>
+                        <td>
+                            <button class="btn btn-sm btn-warning btn-edit">✏️</button>
+                            <button class="btn btn-sm btn-danger btn-delete">🗑️</button>
+                        </td></tr>`;
+            });
+
+            table += "</tbody></table>";
+            $(containerId).html(table);
+
+            $(".btn-edit").click(function () {
+                const row = $(this).closest("tr");
+                const id = row.data("id");
+                const name = row.find("td:eq(1)").text();
+                const grade = row.find("td:eq(2)").text();
+                const age = row.find("td:eq(3)").text();
+                const parentId = row.find("td:eq(4)").text();
+
+                const formHtml = `
+                        <div class='card card-body bg-light'>
+                            <h6>تحديث بيانات الطالب رقم ${id}</h6>
+                            <input type='text' class='form-control mb-2 edit-name' value='${name}'>
+                            <input type='text' class='form-control mb-2 edit-grade' value='${grade}'>
+                            <input type='number' class='form-control mb-2 edit-age' value='${age}'>
+                            <input type='number' class='form-control mb-2 edit-parent' value='${parentId}'>
+                            <div>
+                                <button class='btn btn-success btn-save-edit me-2'>💾 حفظ</button>
+                                <button class='btn btn-secondary btn-cancel-edit'>❌ إلغاء</button>
+                            </div>
+                        </div>`;
+
+                row.after(`<tr class='edit-row'><td colspan='6'>${formHtml}</td></tr>`);
+                row.hide();
+
+                $(".btn-save-edit").click(function () {
+                    const updatedDto = {
+                        studentName: $(".edit-name").val(),
+                        grade: $(".edit-grade").val(),
+                        age: parseInt($(".edit-age").val()),
+                        parentId: parseInt($(".edit-parent").val())
+                    };
+                    $.ajax({
+                        url: `${apiBase}/${id}`,
+                        method: "PUT",
+                        contentType: "application/json",
+                        data: JSON.stringify(updatedDto),
+                        success: () => {
+                            alert("✅ تم التحديث بنجاح");
+                            $("#btnGetAll").click();
+                        },
+                        error: () => alert("❌ فشل في التحديث")
+                    });
+                });
+
+                $(".btn-cancel-edit").click(function () {
+                    $(".edit-row").remove();
+                    row.show();
+                });
+            });
+
+            $(".btn-delete").click(function () {
+                const id = $(this).closest("tr").data("id");
+                if (confirm("هل أنت متأكد من حذف هذا الطالب؟")) {
+                    $.ajax({
+                        url: `${apiBase}/${id}`,
+                        method: "DELETE",
+                        success: () => { alert("🗑️ تم الحذف بنجاح"); $("#btnGetAll").click(); },
+                        error: () => alert("❌ فشل في الحذف")
+                    });
+                }
+            });
+        }
+    </script>
+</body>
+</html>
