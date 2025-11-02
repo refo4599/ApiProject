@@ -9,7 +9,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "ApiProject.Controllers.LoginModel",
+        "Type": "ApiProject.DTOs.LoginDto",
         "IsRequired": true
       }
     ],
@@ -25,7 +25,7 @@
     "Parameters": [
       {
         "Name": "model",
-        "Type": "ApiProject.Controllers.RegisterModel",
+        "Type": "ApiProject.DTOs.RegisterDto",
         "IsRequired": true
       }
     ],

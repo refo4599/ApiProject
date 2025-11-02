@@ -65,39 +65,44 @@
     <div class="toggle" id="toggleMode">ليس لديك حساب؟ سجل الآن</div>
     </div>
     <script>
+        // Toggle between Login and Registration
         let isLogin = true;
-        document.getElementById("toggleMode").addEventListener("click", () =>
-        {
+        document.getElementById("toggleMode").addEventListener("click", () => {
             isLogin = !isLogin;
             document.getElementById("formTitle").innerText = isLogin ? "تسجيل الدخول" : "إنشاء حساب";
             document.getElementById("registerFields").style.display = isLogin ? "none" : "block";
             document.getElementById("submitBtn").innerText = isLogin ? "دخول" : "تسجيل";
             document.getElementById("toggleMode").innerText = isLogin ? "ليس لديك حساب؟ سجل الآن" : "لديك حساب؟ تسجيل الدخول";
-        }); document.getElementById("submitBtn").addEventListener("click", async () =>
-        {
+        }); document.getElementById("submitBtn").addEventListener("click", async () => {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
             let url, body;
-            if (isLogin)
-            {
+            if (isLogin) {
+
+                // Login Request
                 url = "http://localhost:5150/api/auth/login";
                 body = { email, password };
             }
-            else
-            {
+            else {
                 const username = document.getElementById("username").value;
                 const role = document.getElementById("role").value;
+
+                // Registration Request
                 url = "http://localhost:5150/api/auth/register";
                 body = { username, email, password, role };
-            } const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" },
+
+            }
+            // Send Request to Server
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
             });
 
             const data = await res.json();
-            if (res.ok)
-            {
-                if (isLogin)
-                {
+            if (res.ok) {
+                if (isLogin) {
+                    // Save Token and Redirect to Parents Page
                     localStorage.setItem("token", data.token);
                     alert("تم تسجيل الدخول بنجاح ✅");
                     window.location.href = "parents.html";

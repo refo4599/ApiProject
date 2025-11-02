@@ -74,8 +74,10 @@
 
         <script>
             const apiBase = "http://localhost:5150/api/parent";
+            // Get token from localStorage Login page
             const token = localStorage.getItem("token");
 
+            // 
             $("#btnGetAll").click(function () {
                 $("#parentsContainer").html("<div class='loading'>جارِ التحميل...</div>");
                 $.ajax({
@@ -87,7 +89,7 @@
                 });
             });
 
-            // إضافة
+
             $("#btnAdd").click(function () {
                 const dto = {
                     parentName: $("#addName").val(),
@@ -108,7 +110,7 @@
                 });
             });
 
-            
+
             $("#btnUpdate").click(function () {
                 const id = $("#updateId").val();
                 const dto = {
@@ -130,39 +132,39 @@
                 });
             });
 
-            
+
             function showParents(data) {
                 if (!data || data.length === 0) {
                     $("#parentsContainer").html("<div class='alert alert-warning'>لا يوجد بيانات</div>");
                     return;
                 }
                 let table = `
-                            <table class="table table-bordered table-striped text-center">
-                                <thead class="table-dark">
-                                    <tr><th>ID</th><th>الاسم</th><th>البريد الإلكتروني</th><th>رقم التليفون</th><th>الإجراءات</th></tr>
-                                </thead>
-                                <tbody>
-                        `;
+                                                                            <table class="table table-bordered table-striped text-center">
+                                                                                <thead class="table-dark">
+                                                                                    <tr><th>ID</th><th>الاسم</th><th>البريد الإلكتروني</th><th>رقم التليفون</th><th>الإجراءات</th></tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                        `;
                 data.forEach(p => {
                     table += `
-                                <tr data-parent-id="${p.parentId ?? p.ParentId}">
-                                    <td>${p.parentId ?? p.ParentId}</td>
-                                    <td>${p.parentName ?? p.ParentName}</td>
-                                    <td>${p.email ?? p.Email}</td>
-                                    <td>${p.phoneNumber ?? p.PhoneNumber}</td>
-                                    <td>
-                                        <button class="btn btn-warning btn-sm btn-edit"
-                                                data-id="${p.parentId ?? p.ParentId}"
-                                                data-name="${p.parentName ?? p.ParentName}"
-                                                data-email="${p.email ?? p.Email}"
-                                                data-phone="${p.phoneNumber ?? p.PhoneNumber}">تعديل</button>
-                                        <button class="btn btn-danger btn-sm btn-delete" data-id="${p.parentId ?? p.ParentId}">حذف</button>
-                                        <button class="btn btn-info btn-sm btn-students" data-id="${p.parentId ?? p.ParentId}">عرض الأبناء</button>
-                                    </td>
-                                </tr>
-                                <tr class="child-row" style="display:none;">
-                                    <td colspan="5"><div class="child-container"></div></td>
-                                </tr>`;
+                                                                                <tr data-parent-id="${p.parentId ?? p.ParentId}">
+                                                                                    <td>${p.parentId ?? p.ParentId}</td>
+                                                                                    <td>${p.parentName ?? p.ParentName}</td>
+                                                                                    <td>${p.email ?? p.Email}</td>
+                                                                                    <td>${p.phoneNumber ?? p.PhoneNumber}</td>
+                                                                                    <td>
+                                                                                        <button class="btn btn-warning btn-sm btn-edit"
+                                                                                                data-id="${p.parentId ?? p.ParentId}"
+                                                                                                data-name="${p.parentName ?? p.ParentName}"
+                                                                                                data-email="${p.email ?? p.Email}"
+                                                                                                data-phone="${p.phoneNumber ?? p.PhoneNumber}">تعديل</button>
+                                                                                        <button class="btn btn-danger btn-sm btn-delete" data-id="${p.parentId ?? p.ParentId}">حذف</button>
+                                                                                        <button class="btn btn-info btn-sm btn-students" data-id="${p.parentId ?? p.ParentId}">عرض الأبناء</button>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <tr class="child-row" style="display:none;">
+                                                                                    <td colspan="5"><div class="child-container"></div></td>
+                                                                                </tr>`;
                 });
                 table += "</tbody></table>";
                 $("#parentsContainer").html(table);
@@ -218,20 +220,20 @@
                     return;
                 }
                 let table = `
-                            <table class="table table-bordered table-striped text-center child-table">
-                                <thead class="table-secondary">
-                                    <tr><th>ID</th><th>الاسم</th><th>الصف</th><th>العمر</th><th>Parent ID</th></tr>
-                                </thead>
-                                <tbody>`;
+                                                                            <table class="table table-bordered table-striped text-center child-table">
+                                                                                <thead class="table-secondary">
+                                                                                    <tr><th>ID</th><th>الاسم</th><th>الصف</th><th>العمر</th><th>Parent ID</th></tr>
+                                                                                </thead>
+                                                                                <tbody>`;
                 data.forEach(s => {
                     table += `
-                                <tr>
-                                    <td>${s.studentId ?? s.StudentId}</td>
-                                    <td>${s.studentName ?? s.StudentName}</td>
-                                    <td>${s.grade ?? s.Grade}</td>
-                                    <td>${s.age ?? s.Age}</td>
-                                    <td>${s.parentId ?? s.ParentId}</td>
-                                </tr>`;
+                                                                                <tr>
+                                                                                    <td>${s.studentId ?? s.StudentId}</td>
+                                                                                    <td>${s.studentName ?? s.StudentName}</td>
+                                                                                    <td>${s.grade ?? s.Grade}</td>
+                                                                                    <td>${s.age ?? s.Age}</td>
+                                                                                    <td>${s.parentId ?? s.ParentId}</td>
+                                                                                </tr>`;
                 });
                 table += "</tbody></table>";
                 container.html(table);

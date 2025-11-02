@@ -1,4 +1,5 @@
-﻿using ApiProject.Models;
+﻿using ApiProject.DTOs;
+using ApiProject.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -21,9 +22,11 @@ namespace ApiProject.Controllers
             _config = config;
         }
 
+        // [FromBody] converts JSON payload to C# object
+
         //  Register
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
             var user = new ApplicationUser
             {
@@ -38,12 +41,12 @@ namespace ApiProject.Controllers
 
             await _userManager.AddToRoleAsync(user, "User");
 
-            return Ok(new { message = "User created successfully ✅" });
+            return Ok(new { message = "User created successfully " });
         }
 
         //  Login
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
@@ -56,10 +59,13 @@ namespace ApiProject.Controllers
             return Ok(new { token });
         }
 
-        //  Generate JWT with Role
+        //  Generate Token in JWT invalid 
         private async Task<string> GenerateJwtToken(ApplicationUser user)
         {
+            // Get JWT settings from AppSettings
+            // secret key for encryption Token
             var jwtKey = _config["Jwt:Key"];
+            // server name or url
             var jwtIssuer = _config["Jwt:Issuer"];
 
             var roles = await _userManager.GetRolesAsync(user);
@@ -71,12 +77,14 @@ namespace ApiProject.Controllers
                 new Claim("FullName", user.FullName ?? "")
             };
 
-           
+            // Add Role claims
             foreach (var role in roles)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
+            // Create the token
+            // syme
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -90,19 +98,5 @@ namespace ApiProject.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-    }
-
-    //  Models
-    public class RegisterModel
-    {
-        public string FullName { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Password { get; set; } = "";
-    }
-
-    public class LoginModel
-    {
-        public string Email { get; set; } = "";
-        public string Password { get; set; } = "";
     }
 }

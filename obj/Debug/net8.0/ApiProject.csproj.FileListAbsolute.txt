@@ -430,3 +430,4 @@ E:\ITI - .NET\API\ApiProject\ApiProject\bin\Debug\net8.0\Microsoft.Extensions.Id
 E:\ITI - .NET\API\ApiProject\ApiProject\bin\Debug\net8.0\Microsoft.Extensions.Logging.dll
 E:\ITI - .NET\API\ApiProject\ApiProject\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
 E:\ITI - .NET\API\ApiProject\ApiProject\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+E:\ITI - .NET\API\ApiProject\ApiProject\obj\Debug\net8.0\ApiProject.sourcelink.json

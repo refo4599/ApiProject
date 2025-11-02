@@ -14,17 +14,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterModel"
+                "$ref": "#/components/schemas/RegisterDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterModel"
+                "$ref": "#/components/schemas/RegisterDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/RegisterModel"
+                "$ref": "#/components/schemas/RegisterDto"
               }
             }
           }
@@ -45,17 +45,17 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginModel"
+                "$ref": "#/components/schemas/LoginDto"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginModel"
+                "$ref": "#/components/schemas/LoginDto"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/LoginModel"
+                "$ref": "#/components/schemas/LoginDto"
               }
             }
           }
@@ -343,7 +343,7 @@
   },
   "components": {
     "schemas": {
-      "LoginModel": {
+      "LoginDto": {
         "type": "object",
         "properties": {
           "email": {
@@ -387,7 +387,7 @@
         },
         "additionalProperties": false
       },
-      "RegisterModel": {
+      "RegisterDto": {
         "type": "object",
         "properties": {
           "fullName": {
